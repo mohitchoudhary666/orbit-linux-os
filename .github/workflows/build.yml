@@ -27,6 +27,8 @@ jobs:
           restore-keys: buildroot-2026.08-${{ runner.os }}-
       - name: Build bootable image
         run: JOBS=2 sh ./scripts/build.sh
+      - name: Boot the image in QEMU
+        run: python3 scripts/smoke-qemu.py
       - uses: actions/upload-artifact@v4
         with:
           name: orbit-linux-x86_64
