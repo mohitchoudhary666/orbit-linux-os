@@ -1,0 +1,21 @@
+#!/bin/sh
+set -eu
+case "${1:-help}" in
+    help|-h|--help)
+        cat <<'EOF'
+Orbit Linux commands
+  orbitos help       Show this help
+  orbitos about      Show kernel and system information
+  orbitos health     Check root disk and memory pressure
+  orbitos uptime     Show system uptime
+  orbitos processes  List running processes
+  orbitos reboot     Reboot the virtual machine
+EOF
+        ;;
+    about) printf 'System: %s\nKernel: %s\nArchitecture: %s\n' "$(hostname)" "$(uname -r)" "$(uname -m)" ;;
+    health) exec /usr/bin/orbitos-health ;;
+    uptime) exec uptime ;;
+    processes) exec ps ;;
+    reboot) exec reboot ;;
+    *) echo "Unknown command: $1" >&2; echo "Run 'orbitos help' for commands." >&2; exit 2 ;;
+esac

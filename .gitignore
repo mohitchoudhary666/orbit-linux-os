@@ -1,0 +1,8 @@
+.build/
+dist/*
+!dist/.gitkeep
+*.log
+*.swp
+.vscode/
+.idea/
+

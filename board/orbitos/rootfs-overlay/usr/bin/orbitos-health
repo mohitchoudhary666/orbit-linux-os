@@ -1,0 +1,20 @@
+#!/bin/sh
+set -eu
+failures=0
+mem_total="$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)"
+mem_available="$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)"
+disk_used="$(df -P / | awk 'NR == 2 {gsub(/%/, "", $5); print $5}')"
+printf 'Orbit Linux health report\nUptime: %s\n' "$(uptime)"
+printf 'Memory: %s kB available of %s kB\n' "$mem_available" "$mem_total"
+printf 'Root disk: %s%% used\n' "$disk_used"
+printf 'Processes: %s\n' "$(ps | awk 'NR > 1 {count++} END {print count+0}')"
+if [ "$mem_total" -gt 0 ] && [ "$((mem_available * 100 / mem_total))" -lt 10 ]; then
+    echo 'WARN: less than 10% memory is available'
+    failures=1
+fi
+if [ -n "$disk_used" ] && [ "$disk_used" -ge 90 ]; then
+    echo 'WARN: root disk usage is at least 90%'
+    failures=1
+fi
+if [ "$failures" -eq 0 ]; then echo 'Status: OK'; else echo 'Status: WARNING'; fi
+exit "$failures"
